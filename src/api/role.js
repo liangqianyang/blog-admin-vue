@@ -7,7 +7,7 @@ import qs from 'qs'
  */
 export function list(query) {
   return request({
-    url: '/api/roles',
+    url: '/api/role',
     method: 'get',
     params: query
   })
@@ -18,7 +18,7 @@ export function list(query) {
  */
 export function roles() {
   return request({
-    url: '/api/roles/enable',
+    url: '/api/role/enable',
     method: 'get'
   })
 }
@@ -40,7 +40,7 @@ export function role_info(id) {
  */
 export function create(data) {
   return request({
-    url: '/api/roles',
+    url: '/api/role',
     method: 'post',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -53,7 +53,7 @@ export function create(data) {
  */
 export function update(data) {
   return request({
-    url: '/api/roles',
+    url: '/api/role',
     method: 'put',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -66,7 +66,7 @@ export function update(data) {
  */
 export function destroy(ids) {
   return request({
-    url: '/api/roles',
+    url: '/api/role',
     method: 'delete',
     params: { ids: ids }
   })

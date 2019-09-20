@@ -7,7 +7,7 @@ import qs from 'qs'
  */
 export function list(query) {
   return request({
-    url: '/api/menus',
+    url: '/api/menu',
     method: 'get',
     params: query
   })
@@ -18,7 +18,7 @@ export function list(query) {
  */
 export function menus() {
   return request({
-    url: '/api/menus/enable',
+    url: '/api/menu/enable',
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function menus() {
  */
 export function create(data) {
   return request({
-    url: '/api/menus',
+    url: '/api/menu',
     method: 'post',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -42,7 +42,7 @@ export function create(data) {
  */
 export function update(data) {
   return request({
-    url: '/api/menus',
+    url: '/api/menu',
     method: 'put',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -55,7 +55,7 @@ export function update(data) {
  */
 export function destroy(ids) {
   return request({
-    url: '/api/menus',
+    url: '/api/menu',
     method: 'delete',
     params: { ids: ids }
   })
