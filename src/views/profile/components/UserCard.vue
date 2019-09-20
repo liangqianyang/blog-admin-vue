@@ -7,8 +7,8 @@
     <div class="user-profile">
       <div class="box-center">
         <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
-          <div>Hello</div>
-          {{ user.role }}
+          <div style="margin:5px;">Hello</div>
+          {{ user.name }}
         </pan-thumb>
       </div>
       <div class="box-center">

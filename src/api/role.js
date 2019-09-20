@@ -1,38 +1,74 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
-export function getRoutes() {
+/**
+ * 获取角色列表
+ * @param {*} query 查询条件
+ */
+export function list(query) {
   return request({
-    url: '/routes',
+    url: '/api/roles',
+    method: 'get',
+    params: query
+  })
+}
+
+/**
+ *获取所有可用的角色
+ */
+export function roles() {
+  return request({
+    url: '/api/roles/enable',
     method: 'get'
   })
 }
 
-export function getRoles() {
+/**
+ * 获取角色信息
+ */
+export function role_info(id) {
   return request({
-    url: '/roles',
-    method: 'get'
+    url: '/api/role/info',
+    method: 'get',
+    params: { id: id }
   })
 }
 
-export function addRole(data) {
+/**
+ * 新增角色
+ * @param {*} data 数据
+ */
+export function create(data) {
   return request({
-    url: '/role',
+    url: '/api/roles',
     method: 'post',
-    data
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    data: qs.stringify(data)
   })
 }
 
-export function updateRole(id, data) {
+/**
+ * 更新角色
+ * @param {*} data 数据
+ */
+export function update(data) {
   return request({
-    url: `/role/${id}`,
+    url: '/api/roles',
     method: 'put',
-    data
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    data: qs.stringify(data)
   })
 }
 
-export function deleteRole(id) {
+/**
+ * 删除角色
+ * @param {*} ids 要删除的行
+ */
+export function destroy(ids) {
   return request({
-    url: `/role/${id}`,
-    method: 'delete'
+    url: '/api/roles',
+    method: 'delete',
+    params: { ids: ids }
   })
 }
+
