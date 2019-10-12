@@ -101,14 +101,6 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="getList"
-    />
-
     <!-- 删除提示框 -->
     <el-dialog title="提示" :visible.sync="delVisible" :close-on-click-modal="false" width="300px" center>
       <span>是否确定删除？</span>
@@ -147,7 +139,17 @@
           <el-input v-model="temp.perms" placeholder="请填写授权权限,列如:api.user.list" />
         </el-form-item>
         <el-form-item label="图标">
-          <el-input v-model="temp.icon" />
+          <el-select v-model="temp.icon" class="el-input" placeholder="请选择图标">
+            <el-option
+              v-for="item in svgIcons"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+              <svg-icon :icon-class="item" class-name="disabled" />
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="类型">
           <el-radio-group v-model="radio" :change="typeChange(radio)">
@@ -179,17 +181,18 @@
 </template>
 
 <script>
+import svgIcons from '../icons/svg-icons'
 import { list, menus, create, update, destroy } from '@/api/menu'
 import waves from '@/directive/waves' // waves directive
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import TreeSelect from '@/components/TreeSelect/tree-select.vue'
 
 export default {
   name: 'Menu',
-  components: { Pagination, TreeSelect },
+  components: { TreeSelect },
   directives: { waves },
   data() {
     return {
+      svgIcons,
       radio: 1,
       menusData: null,
       defaultProps: {
@@ -200,12 +203,9 @@ export default {
       defaultCheckedKeys: [],
       tableKey: 0,
       list: null, // 列表数据
-      total: 0,
       listLoading: true, // loading
       // 查询条件
       listQuery: {
-        page: 1,
-        limit: 20,
         name: '',
         sort: '',
         status: '0'
@@ -327,7 +327,6 @@ export default {
       this.listLoading = true
       list(this.listQuery).then(response => {
         this.list = response.data
-        this.total = response.total
         this.listLoading = false
       })
     },

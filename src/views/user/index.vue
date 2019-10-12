@@ -355,6 +355,7 @@ export default {
     // 响应更新操作
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      this.imageUrl = this.temp.avatar
       this.defaultCheckedKeys = [this.temp.role_id]
       this.dialogStatus = 'update'
       this.dialogFormVisible = true

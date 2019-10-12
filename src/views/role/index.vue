@@ -115,7 +115,6 @@
             :data="menusData"
             :check-strictly="checkStrictly"
             show-checkbox
-            default-expand-all
             @check-change="handleCheckChange"
           />
         </el-form-item>
