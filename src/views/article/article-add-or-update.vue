@@ -54,7 +54,7 @@
       <el-form-item label="封面图片" prop="cover">
         <el-upload
           class="cover-uploader"
-          action="http://blog.test/api/article/upload"
+          :action="uploadAction"
           name="cover"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
@@ -129,7 +129,8 @@ export default {
         label_ids: [{ required: true, message: '请选择文章标签', trigger: 'blur' }],
         content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
         cover: [{ required: true, message: '请上传文章封面图片', trigger: 'blur' }]
-      }
+      },
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/article/upload' // 上传图片的链接
     }
   },
   created() {

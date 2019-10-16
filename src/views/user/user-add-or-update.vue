@@ -27,7 +27,7 @@
       <el-form-item label="头像" prop="avatar">
         <el-upload
           class="avatar-uploader"
-          action="http://blog.test/api/user/avatar"
+          :action="uploadAction"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
@@ -35,7 +35,6 @@
           <img v-if="imageUrl" :src="imageUrl" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon" />
         </el-upload>
-      <!-- <el-input v-model="temp.avatar" placeholder="请上传头像" /> -->
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="temp.email" placeholder="请输入用户邮箱" />
@@ -103,7 +102,8 @@ export default {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         check_password: [{ required: true, message: '请输入确认密码', trigger: 'blur' }],
         phone: [{ required: true, pattern: /^0{0,1}(13[0-9]|15[7-9]|153|18[0-9]|199)[0-9]{8}$/, message: '手机号格式有误', trigger: 'blur' }]
-      }
+      },
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/user/avatar' // 上传头像的链接
     }
   },
   created() {
