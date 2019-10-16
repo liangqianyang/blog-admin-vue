@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.name"
-        placeholder="请输入分类名称"
+        v-model="listQuery.title"
+        placeholder="请输入标签名称"
         style="width: 200px;"
         class="filter-item"
         clearable
@@ -39,26 +39,25 @@
       v-loading="listLoading"
       :data="list"
       row-key="id"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       border
       fit
       highlight-current-row
       style="width: 100%;"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="分类名称" min-width="150px">
+      <el-table-column label="标签名称" min-width="150px">
         <template slot-scope="props">
-          <span>{{ props.row.name }}</span>
+          <span>{{ props.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="等级" prop="level" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.level }}</span>
+      <el-table-column label="创建时间" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.created_at }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="路径" prop="path" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.path }}</span>
+      <el-table-column label="更新时间" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.updated_at }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -79,17 +78,17 @@
     </el-dialog>
 
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getList" @refreshCategoryList="getEnableCategory" />
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getList" />
   </div>
 </template>
 
 <script>
-import AddOrUpdate from './category-add-or-update'
-import { getEnableCategory, list, destroy } from '@/api/category'
+import AddOrUpdate from './label-add-or-update'
+import { list, destroy } from '@/api/label'
 import waves from '@/directive/waves' // waves directive
 
 export default {
-  name: 'Category',
+  name: 'Label',
   components: { AddOrUpdate },
   directives: { waves },
   data() {
@@ -99,7 +98,7 @@ export default {
       listLoading: true, // loading
       // 查询条件
       listQuery: {
-        name: ''
+        title: ''
       },
       categotyData: null, // 类目数据
       delVisible: false, // 删除提示弹框的状态
@@ -110,19 +109,11 @@ export default {
   },
   created() {
     this.getList()// 获取列表数据
-    this.getEnableCategory() // 获取分类数据
   },
   methods: {
     // 搜索
     handleFilter() {
       this.getList()
-    },
-    // 获取类目列表
-    getEnableCategory() {
-      getEnableCategory().then(response => {
-        this.categotyData = response.data
-        this.categotyData.unshift({ id: '0', name: '无' })
-      })
     },
     // 获取数据列表
     getList() {
@@ -137,7 +128,7 @@ export default {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate.resetTemp()
-        this.$refs.addOrUpdate.init(row, this.categotyData)
+        this.$refs.addOrUpdate.init(row)
       })
     },
     // 响应更新操作
@@ -145,7 +136,7 @@ export default {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate.resetTemp()
-        this.$refs.addOrUpdate.init(row, this.categotyData)
+        this.$refs.addOrUpdate.init(row)
       })
     },
     // 响应删除操作

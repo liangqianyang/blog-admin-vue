@@ -55,6 +55,7 @@
         :clearable="clearable"
         :collapse-tags="collapseTags"
         class="tree-select"
+        :placeholder="placeholder"
         @click.native="isShowSelect = !isShowSelect"
         @remove-tag="removeSelectedNodes"
         @clear="removeSelectedNode"
@@ -141,6 +142,12 @@ export default {
       default() {
         return 300
       }
+    },
+    placeholder: {
+      type: String,
+      default() {
+        return '请选择'
+      }
     }
   },
   data() {
@@ -148,7 +155,7 @@ export default {
       isShowSelect: false, // 是否显示树状选择器
       options: [],
       selectedData: [], // 选中的节点
-      style: 'width:' + this.width + 'px;' + 'height:' + this.height + 'px;',
+      style: 'width:' + this.width - 20 + 'px;' + 'height:' + this.height + 'px;',
       selectStyle: 'width:' + (this.width + 24) + 'px;',
       checkedIds: [],
       checkedData: []

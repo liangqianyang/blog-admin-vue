@@ -12,18 +12,9 @@
       label-width="120px"
       style="width: 400px; margin-left:50px;"
     >
-      <el-form-item label="父级分类" prop="parent_id">
-        <tree-select
-          :data="categotyData"
-          :default-props="defaultProps"
-          :node-key="nodeKey"
-          :checked-keys="defaultCheckedKeys"
-          @popoverHide="popoverHide"
-        />
-      </el-form-item>
 
-      <el-form-item label="分类名称" prop="name">
-        <el-input v-model="temp.name" />
+      <el-form-item label="标签名称" prop="title">
+        <el-input v-model="temp.title" />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -34,31 +25,22 @@
 </template>
 
 <script>
-import { create, update } from '@/api/category'
-import TreeSelect from '@/components/TreeSelect/tree-select.vue'
+import { create, update } from '@/api/label'
 export default {
-  components: { TreeSelect },
+  components: { },
   data() {
     return {
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dataForm: {},
       dialogFormVisible: false, // 是否显示对话框
-      categotyData: null, // 类目数据
-      nodeKey: 'id',
-      defaultCheckedKeys: [], // 选中的父级分类
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      },
       // 临时数据
       temp: {
         id: '',
-        name: '', // 类目名称
-        parent_id: '0'
+        title: '' // 标签名称
       },
       // 表单规则
       rules: {
-        name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
+        title: [{ required: true, message: '请输入标签名称', trigger: 'blur' }]
       }
     }
   },
@@ -70,31 +52,17 @@ export default {
     resetTemp() {
       this.temp = {
         id: '',
-        name: '',
-        parent_id: '0'
+        title: ''
       }
-      this.defaultCheckedKeys = [0]
     },
-    init(row, data) {
+    init(row) {
       this.dialogFormVisible = true
-      this.categotyData = data
       if (Object.keys(row).length !== 0) {
         this.dialogStatus = 'update'
         this.temp = Object.assign({}, row) // copy obj
-        this.defaultCheckedKeys = [row.parent_id]
       } else {
         this.dialogStatus = 'create'
       }
-    },
-    // 下拉框收回时设置父节点ID
-    popoverHide(checkedIds, checkedData) {
-      if (checkedIds !== '') {
-        this.temp.parent_id = checkedIds
-      }
-    },
-    // 监听单选框
-    typeChange(radio) {
-      this.temp.is_directory = radio
     },
     // 创建数据
     createData() {
@@ -110,7 +78,6 @@ export default {
               onClose: () => {
                 this.visible = false
                 this.$emit('refreshDataList')
-                this.$emit('refreshCategoryList')
               }
             })
           })
@@ -131,7 +98,6 @@ export default {
               onClose: () => {
                 this.visible = false
                 this.$emit('refreshDataList')
-                this.$emit('refreshCategoryList')
               }
             })
           })

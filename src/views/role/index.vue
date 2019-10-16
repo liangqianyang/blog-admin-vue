@@ -29,7 +29,7 @@
         style="margin-left: 10px;"
         type="primary"
         icon="el-icon-edit"
-        @click="handleCreate"
+        @click="handleCreate({})"
       >新增</el-button>
       <el-button
         v-waves
@@ -97,56 +97,20 @@
     </el-dialog>
 
     <!-- 新增/编辑提示框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="120px" style="width: 400px; margin-left:50px;">
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="temp.name" el-input />
-        </el-form-item>
-
-        <el-form-item label="备注">
-          <el-input v-model="temp.remark" class="el-input" />
-        </el-form-item>
-
-        <el-form-item label="权限">
-          <el-tree
-            ref="tree"
-            node-key="id"
-            :props="props"
-            :data="menusData"
-            :check-strictly="checkStrictly"
-            show-checkbox
-            @check-change="handleCheckChange"
-          />
-        </el-form-item>
-
-        <el-form-item label="状态">
-          <el-select v-model="temp.status" class="el-input" placeholder="请选择">
-            <el-option
-              v-for="item in statusOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
-      </div>
-    </el-dialog>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getList" />
   </div>
 </template>
 
 <script>
-import { role_info, list, create, update, destroy } from '@/api/role'
+import { list, destroy } from '@/api/role'
 import { menus } from '@/api/menu'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import AddOrUpdate from './role-add-or-update'
 
 export default {
   name: 'Role',
-  components: { Pagination },
+  components: { Pagination, AddOrUpdate },
   directives: { waves },
   data() {
     return {
@@ -164,6 +128,7 @@ export default {
       },
       delLoading: false, // 删除的loading
       delVisible: false, // 删除提示弹框的状态
+      addOrUpdateVisible: false, // 新增编辑弹窗
       ids: [], // 选中的id
       // 状态
       statusOptions: [{
@@ -176,37 +141,14 @@ export default {
         value: '9',
         label: '停用'
       }],
-      textMap: {
-        update: '编辑',
-        create: '新增'
-      },
       dialogFormVisible: false, // 是否显示Dialog 对话框
       dialogStatus: '', // Dialog对话框状态 新增|编辑
-      menusData: null, // 菜单列表(权限)
-      checkStrictly: false,
-      // 权限列表的配置
-      props: {
-        label: 'name',
-        children: 'children'
-      },
-      // 临时数据
-      temp: {
-        id: '', // 角色ID
-        name: '', // 角色名称
-        remark: '', // 备注
-        rule_ids: [], // 选中的权限
-        status: '0'// 状态
-      },
-      // 表单规则
-      rules: {
-        name: [
-          { required: true, message: '请输入角色名称', trigger: 'blur' }
-        ]
-      }
+      menusData: null // 菜单列表(权限)
     }
   },
   created() {
     this.getList()// 获取列表数据
+    this.getMenus() // 获取可选权限
   },
   methods: {
     // 搜索
@@ -233,49 +175,11 @@ export default {
       }
       this.handleFilter()
     },
-    // temp数据
-    resetTemp() {
-      this.temp = {
-        id: '', // 角色ID
-        name: '', // 角色名称
-        remark: '', // 备注
-        rule_ids: [], // 选中的权限
-        status: '0'// 状态
-      }
-    },
     // 获取菜单列表用于权限控制
     getMenus() {
       menus().then(response => {
         this.menusData = response.data
       })
-    },
-    // 获取角色信息(编辑时触发)
-    getRoleInfo() {
-      /** 将树的父级与子级关联移除 */
-      this.checkStrictly = true
-      if (this.temp.id !== '') {
-        role_info(this.temp.id).then(response => {
-          // 给表单赋值开始
-          this.$refs.tree.setCheckedKeys(response.data.menu_ids)// 设置已选中的权限
-
-          /** 将树的父级与子级关联绑定 */
-          this.checkStrictly = false
-        })
-      } else {
-        /** 将树的父级与子级关联绑定 */
-        this.checkStrictly = false
-      }
-    },
-    // 权限选项发生改变时获取选中的节点
-    handleCheckChange(data, checked, indeterminate) {
-      const parentArr = this.$refs.tree.getHalfCheckedNodes()
-      const childeArr = this.$refs.tree.getCheckedNodes()
-      const arr = childeArr.concat(parentArr)
-      const length = arr.length
-      this.temp.rule_ids = []
-      for (let i = 0; i < length; i++) {
-        this.temp.rule_ids.push(arr[i].id)
-      }
     },
     // 获取数据列表
     getList() {
@@ -287,64 +191,19 @@ export default {
       })
     },
     // 响应新增操作
-    handleCreate() {
-      this.getMenus()// 获取菜单列表(权限)
-      this.defaultCheckedKeys = []
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+    handleCreate(row) {
+      this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs.addOrUpdate.resetTemp()
+        this.$refs.addOrUpdate.init(row, this.menusData)
       })
     },
-    // 创建数据
-    createData() {
-      this.$refs['dataForm'].validate(valid => {
-        if (valid) {
-          create(this.temp).then(response => {
-            this.dialogFormVisible = false
-            this.$notify({
-              title: response.type,
-              message: response.message,
-              type: response.type,
-              duration: 1500
-            })
-            this.getList()
-          })
-        } else {
-          return false
-        }
-      })
-    },
-
     // 响应编辑操作
     handleUpdate(row) {
-      this.getMenus()// 获取菜单列表(权限)
-      this.temp = Object.assign({}, row) // copy obj
-      this.getRoleInfo()
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    // 更新数据
-    updateData() {
-      this.$refs['dataForm'].validate(valid => {
-        if (valid) {
-          update(this.temp).then(response => {
-            this.dialogFormVisible = false
-            this.$notify({
-              title: response.type,
-              message: response.message,
-              type: response.type,
-              duration: 1500
-            })
-            this.getList()
-          })
-        } else {
-          return false
-        }
+        this.$refs.addOrUpdate.resetTemp()
+        this.$refs.addOrUpdate.init(row, this.menusData)
       })
     },
     // 响应删除操作

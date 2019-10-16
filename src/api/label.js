@@ -2,44 +2,34 @@ import request from '@/utils/request'
 import qs from 'qs'
 
 /**
- * 获取菜单列表
+ * 获取标签列表
  * @param {*} query 查询条件
  */
 export function list(query) {
   return request({
-    url: '/api/menu',
+    url: '/api/label',
     method: 'get',
     params: query
   })
 }
 
 /**
- *获取所有可用的菜单
+ *获取所有的标签
  */
-export function menus() {
+export function getEnableLabel() {
   return request({
-    url: '/api/menu/enable',
+    url: '/api/label/enable',
     method: 'get'
   })
 }
 
 /**
- * 添加菜单时的菜单列表
- */
-export function authMenus() {
-  return request({
-    url: '/api/menu/authMenus',
-    method: 'get'
-  })
-}
-
-/**
- * 新增菜单
+ * 新增标签
  * @param {*} data 数据
  */
 export function create(data) {
   return request({
-    url: '/api/menu',
+    url: '/api/label',
     method: 'post',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -47,12 +37,12 @@ export function create(data) {
 }
 
 /**
- * 更新菜单
+ * 更新标签
  * @param {*} data 数据
  */
 export function update(data) {
   return request({
-    url: '/api/menu',
+    url: '/api/label',
     method: 'put',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -60,12 +50,12 @@ export function update(data) {
 }
 
 /**
- * 删除菜单
+ * 删除标签
  * @param {*} ids 要删除的行
  */
 export function destroy(ids) {
   return request({
-    url: '/api/menu',
+    url: '/api/label',
     method: 'delete',
     params: { ids: ids }
   })
