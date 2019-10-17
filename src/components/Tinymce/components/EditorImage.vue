@@ -12,7 +12,7 @@
         :on-success="handleSuccess"
         :before-upload="beforeUpload"
         class="editor-slide-upload"
-        action="http://blog.test/api/article/upload"
+        :action="uploadAction"
         list-type="picture-card"
       >
         <el-button size="small" type="primary">
@@ -44,7 +44,8 @@ export default {
     return {
       dialogVisible: false,
       listObj: {},
-      fileList: []
+      fileList: [],
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/article/upload' // 上传图片的链接
     }
   },
   methods: {

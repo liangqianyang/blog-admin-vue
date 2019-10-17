@@ -113,7 +113,7 @@ export default {
         this.getRoleInfo()
       } else {
         this.dialogStatus = 'create'
-        this.$refs.tree.setCheckedKeys([])// 设置已选中的权限
+        // this.$refs.tree.setCheckedKeys([])// 设置已选中的权限
       }
     },
 
