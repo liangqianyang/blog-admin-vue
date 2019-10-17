@@ -22,7 +22,7 @@
         <div class="user-bio-section-header"><svg-icon icon-class="education" /><span>Education</span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            JS in Computer Science from the University of Technology
+            安徽师范大学皖江学院管理系
           </div>
         </div>
       </div>
@@ -31,20 +31,32 @@
         <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>Skills</span></div>
         <div class="user-bio-section-body">
           <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="70" />
+            <span>PHP</span>
+            <el-progress :percentage="90" />
+          </div>
+          <div class="progress-item">
+            <span>JAVA</span>
+            <el-progress :percentage="75" />
+          </div>
+          <div class="progress-item">
+            <span>GO</span>
+            <el-progress :percentage="65" />
+          </div>
+          <div class="progress-item">
+            <span>HTML</span>
+            <el-progress :percentage="80" />
           </div>
           <div class="progress-item">
             <span>JavaScript</span>
-            <el-progress :percentage="18" />
+            <el-progress :percentage="80" />
           </div>
           <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="12" />
+            <span>CSS</span>
+            <el-progress :percentage="75" />
           </div>
           <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress :percentage="100" status="success" />
+            <span>Vue</span>
+            <el-progress :percentage="70" />
           </div>
         </div>
       </div>

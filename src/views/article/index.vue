@@ -151,6 +151,14 @@
       </el-table-column>
     </el-table>
 
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
+
     <!-- 删除提示框 -->
     <el-dialog title="提示" :visible.sync="delVisible" :close-on-click-modal="false" width="300px" center>
       <span>是否确定删除？</span>
@@ -190,15 +198,17 @@ import { getEnableCategory } from '@/api/category'
 import { getEnableLabel } from '@/api/label'
 import TreeSelect from '@/components/TreeSelect/tree-select.vue'
 import waves from '@/directive/waves' // waves directive
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
   name: 'Article',
-  components: { AddOrUpdate, TreeSelect },
+  components: { AddOrUpdate, TreeSelect, Pagination },
   directives: { waves },
   data() {
     return {
       tableKey: 0,
       list: null, // 列表数据
+      total: 0,
       listLoading: true, // loading
       // 查询条件
       listQuery: {
@@ -268,6 +278,7 @@ export default {
       this.listLoading = true
       list(this.listQuery).then(response => {
         this.list = response.data
+        this.total = response.total
         this.listLoading = false
       })
     },

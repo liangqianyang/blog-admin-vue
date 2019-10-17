@@ -149,6 +149,13 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
+          if (this.temp.rule_ids.length === 0) {
+            this.$message({
+              message: '请选择权限',
+              type: 'warning'
+            })
+            return
+          }
           create(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({
@@ -171,6 +178,13 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
+          if (this.temp.rule_ids.length === 0) {
+            this.$message({
+              message: '请选择权限',
+              type: 'warning'
+            })
+            return
+          }
           update(this.temp).then(response => {
             this.dialogFormVisible = false
             this.$notify({

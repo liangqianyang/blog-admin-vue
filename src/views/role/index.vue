@@ -9,14 +9,14 @@
         clearable
         @keyup.enter.native="handleFilter"
       />
-      <el-select v-model="listQuery.status" class="filter-item" placeholder="请选择状态">
+      <!-- <el-select v-model="listQuery.status" class="filter-item" placeholder="请选择状态">
         <el-option
           v-for="item in statusOptions"
           :key="item.value"
           :label="item.label"
           :value="item.value"
         />
-      </el-select>
+      </el-select> -->
       <el-button
         v-waves
         class="filter-item"
@@ -65,12 +65,12 @@
           <span>{{ scope.row.remark }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="status" sortable="custom" align="center">
+      <!-- <el-table-column label="状态" prop="status" sortable="custom" align="center">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status =='0'" type="success">正常</el-tag>
           <el-tag v-if="scope.row.status =='9'" type="danger">停用</el-tag>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>

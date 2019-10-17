@@ -99,7 +99,7 @@ export default {
         label: '正常'
       }, {
         value: '9',
-        label: '停用'
+        label: '下架'
       }],
       categoryOptions: [], // 文章分类数据
       labelOptions: [], // 文章标签数据

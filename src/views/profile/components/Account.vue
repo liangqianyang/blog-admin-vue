@@ -1,7 +1,10 @@
 <template>
   <el-form>
     <el-form-item label="Name">
-      <el-input v-model.trim="user.name" />
+      <el-input v-model.trim="user.username" />
+    </el-form-item>
+    <el-form-item label="Phone">
+      <el-input v-model.trim="user.phone" />
     </el-form-item>
     <el-form-item label="Email">
       <el-input v-model.trim="user.email" />
@@ -19,7 +22,8 @@ export default {
       type: Object,
       default: () => {
         return {
-          name: '',
+          username: '',
+          phone: '',
           email: ''
         }
       }
