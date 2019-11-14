@@ -39,6 +39,15 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="SEO标题" prop="seo_title">
+        <el-input v-model="temp.seo_title" />
+      </el-form-item>
+      <el-form-item label="SEO关键词" prop="seo_keywords">
+        <el-input v-model="temp.seo_keywords" />
+      </el-form-item>
+      <el-form-item label="SEO描述" prop="seo_description">
+        <el-input v-model="temp.seo_description" />
+      </el-form-item>
       <el-form-item label="内容" prop="content" style="margin-bottom: 30px;">
         <Tinymce ref="editor" v-model="temp.content" :height="400" />
       </el-form-item>
@@ -120,7 +129,10 @@ export default {
         is_admin: '1', // 是否是后台发布
         publish_date: '', // 发布日期
         cover: '', // 封面图
-        status: '0' // 状态
+        status: '0', // 状态
+        seo_title: '', // seo标题
+        seo_keywords: '', // seo关键词
+        seo_description: '' // seo描述
       },
       // 表单规则
       rules: {
@@ -148,7 +160,10 @@ export default {
         is_admin: '1', // 是否是后台发布
         publish_date: '', // 发布日期
         cover: '', // 封面图
-        status: '0' // 状态
+        status: '0', // 状态
+        seo_title: '', // seo标题
+        seo_keywords: '', // seo关键词
+        seo_description: '' // seo描述
       }
       this.defaultCheckedKeys = []
     },

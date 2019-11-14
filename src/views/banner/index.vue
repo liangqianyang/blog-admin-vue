@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.name"
-        placeholder="请输入分类名称"
+        v-model="listQuery.title"
+        placeholder="请输入标题"
         style="width: 200px;"
         class="filter-item"
         clearable
@@ -39,46 +39,57 @@
       v-loading="listLoading"
       :data="list"
       row-key="id"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       border
       fit
       highlight-current-row
       style="width: 100%;"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="栏目名称" min-width="150px">
+      <el-table-column label="标题" min-width="150px">
         <template slot-scope="props">
-          <span>{{ props.row.name }}</span>
+          <span>{{ props.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否是分类" prop="is_category" align="center">
+      <el-table-column label="轮播图" prop="image_url" align="center" min-width="320px">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.is_category =='0'" type="warning">否</el-tag>
-          <el-tag v-if="scope.row.is_category =='1'" type="success">是</el-tag>
+          <img :src="scope.row.image_url" width="300">
         </template>
       </el-table-column>
-      <el-table-column label="等级" prop="level" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.level }}</span>
+      <el-table-column label="外链" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.url }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="路径" prop="path" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.path }}</span>
+      <el-table-column label="排序" sortable="custom" min-width="50px">
+        <template slot-scope="props">
+          <span>{{ props.row.sort }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="排序" prop="sort" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.sort }}</span>
+      <el-table-column label="创建时间" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.created_at }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="更新时间" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.updated_at }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" min-width="100px">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
 
     <!-- 删除提示框 -->
     <el-dialog title="提示" :visible.sync="delVisible" :close-on-click-modal="false" width="300px" center>
@@ -90,27 +101,29 @@
     </el-dialog>
 
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getList" @refreshCategoryList="getEnableCategory" />
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getList" />
   </div>
 </template>
 
 <script>
-import AddOrUpdate from './category-add-or-update'
-import { getEnableCategory, list, destroy } from '@/api/category'
+import AddOrUpdate from './banner-add-or-update'
+import { list, destroy } from '@/api/banner'
 import waves from '@/directive/waves' // waves directive
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
-  name: 'Category',
-  components: { AddOrUpdate },
+  name: 'Banner',
+  components: { AddOrUpdate, Pagination },
   directives: { waves },
   data() {
     return {
       tableKey: 0,
       list: null, // 列表数据
       listLoading: true, // loading
+      total: 0,
       // 查询条件
       listQuery: {
-        name: ''
+        title: ''
       },
       categotyData: null, // 类目数据
       delVisible: false, // 删除提示弹框的状态
@@ -121,25 +134,34 @@ export default {
   },
   created() {
     this.getList()// 获取列表数据
-    this.getEnableCategory() // 获取分类数据
   },
   methods: {
     // 搜索
     handleFilter() {
       this.getList()
     },
-    // 获取类目列表
-    getEnableCategory() {
-      getEnableCategory().then(response => {
-        this.categotyData = response.data
-        this.categotyData.unshift({ id: '0', name: '无' })
-      })
+    // 排序
+    sortChange(data) {
+      const { prop, order } = data
+      if (prop === 'sort') {
+        this.sortBySort(order)
+      }
+    },
+    // 根据排序排序
+    sortBySort(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = 'sort asc'
+      } else {
+        this.listQuery.sort = 'sort desc'
+      }
+      this.handleFilter()
     },
     // 获取数据列表
     getList() {
       this.listLoading = true
       list(this.listQuery).then(response => {
         this.list = response.data
+        this.total = response.total
         this.listLoading = false
       })
     },
@@ -148,7 +170,7 @@ export default {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate.resetTemp()
-        this.$refs.addOrUpdate.init(row, this.categotyData)
+        this.$refs.addOrUpdate.init(row)
       })
     },
     // 响应更新操作
@@ -156,7 +178,7 @@ export default {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate.resetTemp()
-        this.$refs.addOrUpdate.init(row, this.categotyData)
+        this.$refs.addOrUpdate.init(row)
       })
     },
     // 响应删除操作

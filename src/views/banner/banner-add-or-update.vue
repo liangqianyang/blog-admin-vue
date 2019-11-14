@@ -12,27 +12,25 @@
       label-width="120px"
       style="width: 400px; margin-left:50px;"
     >
-      <el-form-item label="父级栏目" prop="parent_id">
-        <tree-select
-          :data="categotyData"
-          :default-props="defaultProps"
-          :node-key="nodeKey"
-          :checked-keys="defaultCheckedKeys"
-          @popoverHide="popoverHide"
-        />
-      </el-form-item>
 
-      <el-form-item label="栏目名称" prop="name">
-        <el-input v-model="temp.name" />
+      <el-form-item label="标题" prop="title">
+        <el-input v-model="temp.title" />
       </el-form-item>
-
-      <el-form-item label="是否是分类">
-        <el-radio-group v-model="radio" :change="typeChange(radio)">
-          <el-radio :label="1">是</el-radio>
-          <el-radio :label="0">否</el-radio>
-        </el-radio-group>
+      <el-form-item label="外链" prop="url">
+        <el-input v-model="temp.url" />
       </el-form-item>
-
+      <el-form-item label="轮播图" prop="image_url">
+        <el-upload
+          class="banner-uploader"
+          :action="uploadAction"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+        >
+          <img v-if="temp.image_url" :src="temp.image_url" class="banner">
+          <i v-else class="el-icon-plus banner-uploader-icon" />
+        </el-upload>
+      </el-form-item>
       <el-form-item label="排序" prop="sort">
         <el-input v-model="temp.sort" type="number" />
       </el-form-item>
@@ -45,35 +43,27 @@
 </template>
 
 <script>
-import { create, update } from '@/api/category'
-import TreeSelect from '@/components/TreeSelect/tree-select.vue'
+import { create, update } from '@/api/banner'
 export default {
-  components: { TreeSelect },
+  components: { },
   data() {
     return {
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dataForm: {},
       dialogFormVisible: false, // 是否显示对话框
-      categotyData: null, // 类目数据
-      nodeKey: 'id',
-      defaultCheckedKeys: [], // 选中的父级分类
-      defaultProps: {
-        children: 'children',
-        label: 'name'
-      },
-      radio: 1,
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/banner/upload', // 上传图片的链接
+      imageUrl: '', // 轮播展示图
       // 临时数据
       temp: {
         id: '',
-        name: '', // 类目名称
-        is_category: 1, // 是否是分类
-        parent_id: '0',
-        sort: '1'// 排序
+        title: '', // 标题
+        url: '', // 外链
+        image_url: '', // 轮播链接
+        sort: 1// 排序
       },
       // 表单规则
       rules: {
-        name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
-        sort: [{ required: true, message: '请输入排序', trigger: 'blur' }]
+        title: [{ required: true, message: '请输入标题名称', trigger: 'blur' }]
       }
     }
   },
@@ -85,34 +75,38 @@ export default {
     resetTemp() {
       this.temp = {
         id: '',
-        name: '',
-        parent_id: '0',
-        is_category: 1, // 是否是分类
-        sort: '1'// 排序
+        title: '', // 标题
+        url: '', // 外链
+        image_url: '', // 轮播链接
+        sort: 1// 排序
       }
-      this.defaultCheckedKeys = [0]
     },
-    init(row, data) {
+    init(row) {
       this.dialogFormVisible = true
-      this.categotyData = data
       if (Object.keys(row).length !== 0) {
         this.dialogStatus = 'update'
         this.temp = Object.assign({}, row) // copy obj
-        this.defaultCheckedKeys = [row.parent_id]
       } else {
         this.dialogStatus = 'create'
       }
     },
-    // 下拉框收回时设置父节点ID
-    popoverHide(checkedIds, checkedData) {
-      if (checkedIds !== '') {
-        this.temp.parent_id = checkedIds
+    handleAvatarSuccess(res, file) {
+      this.temp.image_url = res.file
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!(isJPG || isPNG)) {
+        this.$message.error('上传头像图片只能是JPG格式或者PNG格式!')
       }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return file.type && isLt2M
     },
-    // 监听单选框
-    typeChange(radio) {
-      this.temp.is_category = radio
-    },
+
     // 创建数据
     createData() {
       this.$refs['dataForm'].validate(valid => {
@@ -127,7 +121,6 @@ export default {
               onClose: () => {
                 this.visible = false
                 this.$emit('refreshDataList')
-                this.$emit('refreshCategoryList')
               }
             })
           })
@@ -148,7 +141,6 @@ export default {
               onClose: () => {
                 this.visible = false
                 this.$emit('refreshDataList')
-                this.$emit('refreshCategoryList')
               }
             })
           })
@@ -158,3 +150,29 @@ export default {
   }
 }
 </script>
+
+<style>
+  .banner-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .banner-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 420px;
+    height: 280px;
+    line-height: 280px;
+    text-align: center;
+  }
+  .banner {
+    width: 420px;
+    height: 280px;
+    display: block;
+  }
+</style>
