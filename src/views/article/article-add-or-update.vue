@@ -15,8 +15,11 @@
       style="width: 100%;"
     >
 
-      <el-form-item label="标题" prop="title">
+      <el-form-item label="文章标题" prop="title">
         <el-input v-model="temp.title" />
+      </el-form-item>
+      <el-form-item label="文章简介" prop="summary">
+        <el-input v-model="temp.summary" />
       </el-form-item>
       <el-form-item label="文章分类" prop="cid">
         <tree-select
@@ -48,18 +51,6 @@
       <el-form-item label="SEO描述" prop="seo_description">
         <el-input v-model="temp.seo_description" />
       </el-form-item>
-      <el-form-item label="内容" prop="content" style="margin-bottom: 30px;">
-        <Tinymce ref="editor" v-model="temp.content" :height="400" />
-      </el-form-item>
-      <el-form-item label="发布日期" prop="publish_date">
-        <el-date-picker
-          v-model="temp.publish_date"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          style="width:100%;"
-          placeholder="选择发布时间"
-        />
-      </el-form-item>
       <el-form-item label="封面图片" prop="cover">
         <el-upload
           class="cover-uploader"
@@ -73,6 +64,18 @@
           <i v-else class="el-icon-plus cover-uploader-icon" />
         </el-upload>
       </el-form-item>
+      <el-form-item label="内容" prop="content" style="margin-bottom: 30px;">
+        <Tinymce ref="editor" v-model="temp.content" :height="400" />
+      </el-form-item>
+      <el-form-item label="发布日期" prop="publish_date">
+        <el-date-picker
+          v-model="temp.publish_date"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          style="width:100%;"
+          placeholder="选择发布时间"
+        />
+      </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="temp.status" class="el-input" placeholder="请选择">
           <el-option
@@ -85,7 +88,7 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取消</el-button>
+      <el-button @click="handleCancel()">取消</el-button>
       <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">确认</el-button>
     </div>
   </el-dialog>
@@ -122,7 +125,8 @@ export default {
       // 临时数据
       temp: {
         id: '',
-        title: '', // 标签名称
+        title: '', // 文章标题
+        summary: '', // 文章简介
         cid: '', // 分类ID
         label_ids: [], // 选择的文章标签
         content: '', // 内容
@@ -136,7 +140,8 @@ export default {
       },
       // 表单规则
       rules: {
-        title: [{ required: true, message: '请输入标题名称', trigger: 'blur' }],
+        title: [{ required: true, message: '请输入文章标题', trigger: 'blur' }],
+        summary: [{ required: true, message: '请输入文章简介', trigger: 'blur' }],
         cid: [{ required: true, message: '请选择文章分类', trigger: 'blur' }],
         label_ids: [{ required: true, message: '请选择文章标签', trigger: 'blur' }],
         content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
@@ -154,6 +159,7 @@ export default {
       this.temp = {
         id: '',
         title: '',
+        summary: '',
         cid: '', // 分类ID
         label_ids: [], // 标签ID
         content: '', // 内容
@@ -175,6 +181,9 @@ export default {
       if (Object.keys(row).length !== 0) {
         this.dialogStatus = 'update'
         this.temp = Object.assign({}, row) // copy obj
+        if (this.$refs['editor']) {
+          window.tinymce.get(this.$refs['editor'].id).setContent(row.content)
+        }
         this.defaultCheckedKeys = [this.temp.cid]
         const selectedLabels = [] // 选中的标签
         for (const key in row.labels) {
@@ -247,6 +256,10 @@ export default {
           })
         }
       })
+    },
+    // 点击取消
+    handleCancel() {
+      this.dialogFormVisible = false
     }
   }
 }
