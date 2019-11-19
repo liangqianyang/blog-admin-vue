@@ -142,6 +142,7 @@ export default {
         this.radio = parseInt(row.type)
       } else {
         this.dialogStatus = 'create'
+        this.defaultCheckedKeys = [0]
       }
     },
     // 下拉框收回时设置父节点ID

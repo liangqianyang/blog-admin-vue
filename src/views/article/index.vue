@@ -119,10 +119,20 @@
           <span>{{ props.row.publish_date }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="后台发布" min-width="100px">
+      <el-table-column label="点赞数" min-width="80px">
         <template slot-scope="props">
-          <el-tag v-if="props.row.is_admin =='1'" type="success">是</el-tag>
-          <el-tag v-if="props.row.is_admin =='0'" type="danger">否</el-tag>
+          <span>{{ props.row.likes }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="评论数" min-width="80px">
+        <template slot-scope="props">
+          <span>{{ props.row.comments }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否置顶" min-width="100px">
+        <template slot-scope="props">
+          <el-tag v-if="props.row.is_top =='1'" type="success">是</el-tag>
+          <el-tag v-if="props.row.is_top =='0'" type="danger">否</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="状态" min-width="100px">
@@ -141,9 +151,10 @@
           <span>{{ props.row.created_at }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" min-width="200px" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
+          <el-button size="mini" type="success" @click="handleTopArticle(row)">置顶</el-button>
           <el-button v-if="row.status =='9'" size="mini" type="success" @click="handleUpArticle(row)">上架</el-button>
           <el-button v-if="row.status =='0'" type="warning" size="mini" @click="handleDownArticle(row)">下架</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
@@ -165,6 +176,15 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="delVisible = false">取 消</el-button>
         <el-button type="primary" @click="deleteRow">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 置顶提示框 -->
+    <el-dialog title="提示" :visible.sync="topArticleVisible" :close-on-click-modal="false" width="300px" center>
+      <span>是否确定置顶？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="topArticleVisible = false">取 消</el-button>
+        <el-button type="primary" @click="topArticle">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -193,7 +213,7 @@
 
 <script>
 import AddOrUpdate from './article-add-or-update'
-import { list, destroy, up, down } from '@/api/article'
+import { list, destroy, top, up, down } from '@/api/article'
 import { getEnableCategory } from '@/api/category'
 import { getEnableLabel } from '@/api/label'
 import TreeSelect from '@/components/TreeSelect/tree-select.vue'
@@ -238,9 +258,11 @@ export default {
         label: 'name'
       },
       delVisible: false, // 删除提示弹框的状态
+      topArticleVisible: false, // 置顶文章提示弹框的状态
       upArticleVisible: false, // 上架文章提示弹框的状态
       downArticleVisible: false, // 下架文章提示弹框的状态
-      ids: [], // 选中的id
+      id: '', // 选中的id
+      ids: [], // 选中的ids
       delLoading: false, // 删除loading
       addOrUpdateVisible: false
     }
@@ -334,6 +356,10 @@ export default {
       this.delLoading = false
       this.delVisible = false// 关闭删除提示模态框
     },
+    handleTopArticle(row) {
+      this.topArticleVisible = true // 置顶上架弹框
+      this.id = row.id
+    },
     // 响应上架操作
     handleUpArticle(row) {
       this.upArticleVisible = true // 显示上架弹框
@@ -379,6 +405,21 @@ export default {
       for (let i = 0; i < length; i++) {
         this.ids.push(select_rows[i].id)
       }
+    },
+    // 确定置顶文章
+    topArticle() {
+      this.delLoading = true
+      top(this.id).then(response => {
+        this.$notify({
+          title: response.type,
+          message: response.message,
+          type: response.type,
+          duration: 1500
+        })
+        this.getList()
+      })
+      this.delLoading = false
+      this.topArticleVisible = false// 关闭置顶文章提示模态框
     },
     // 确定上架文章
     upArticle() {

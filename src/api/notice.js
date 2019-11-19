@@ -2,24 +2,24 @@ import request from '@/utils/request'
 import qs from 'qs'
 
 /**
- * 获取文章列表
+ * 获取公告列表
  * @param {*} query 查询条件
  */
 export function list(query) {
   return request({
-    url: '/api/article',
+    url: '/api/notice',
     method: 'get',
     params: query
   })
 }
 
 /**
- * 新增文章
+ * 新增公告
  * @param {*} data 数据
  */
 export function create(data) {
   return request({
-    url: '/api/article',
+    url: '/api/notice',
     method: 'post',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -27,12 +27,12 @@ export function create(data) {
 }
 
 /**
- * 更新文章
+ * 更新公告
  * @param {*} data 数据
  */
 export function update(data) {
   return request({
-    url: '/api/article',
+    url: '/api/notice',
     method: 'put',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     data: qs.stringify(data)
@@ -40,12 +40,12 @@ export function update(data) {
 }
 
 /**
- * 删除文章
+ * 删除公告
  * @param {*} ids 要删除的行
  */
 export function destroy(ids) {
   return request({
-    url: '/api/article',
+    url: '/api/notice',
     method: 'delete',
     params: { ids: ids }
   })
@@ -57,32 +57,9 @@ export function destroy(ids) {
  */
 export function top(id) {
   return request({
-    url: '/api/article/top',
+    url: '/api/notice/top',
     method: 'put',
     params: { id: id }
   })
 }
 
-/**
- * 上架文章
- * @param {*} ids 要上架的行
- */
-export function up(ids) {
-  return request({
-    url: '/api/article/up',
-    method: 'put',
-    params: { ids: ids }
-  })
-}
-
-/**
- * 下架文章
- * @param {*} ids 要下架的行
- */
-export function down(ids) {
-  return request({
-    url: '/api/article/down',
-    method: 'put',
-    params: { ids: ids }
-  })
-}

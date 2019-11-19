@@ -51,7 +51,16 @@
       <el-form-item label="SEO描述" prop="seo_description">
         <el-input v-model="temp.seo_description" />
       </el-form-item>
-      <el-form-item label="封面图片" prop="cover">
+      <el-form-item label="封面图片">
+        <el-radio-group v-model="radio">
+          <el-radio :label="0">网络图片</el-radio>
+          <el-radio :label="1">上传封面图片</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="radio==0" label="封面图片" prop="cover">
+        <el-input v-model="temp.cover" type="url" />
+      </el-form-item>
+      <el-form-item v-if="radio==1" label="封面图片" prop="cover">
         <el-upload
           class="cover-uploader"
           :action="uploadAction"
@@ -67,7 +76,7 @@
       <el-form-item label="内容" prop="content" style="margin-bottom: 30px;">
         <Tinymce ref="editor" v-model="temp.content" :height="400" />
       </el-form-item>
-      <el-form-item label="发布日期" prop="publish_date">
+      <el-form-item v-if="dialogStatus=='create'" label="发布日期" prop="publish_date">
         <el-date-picker
           v-model="temp.publish_date"
           type="datetime"
@@ -76,7 +85,13 @@
           placeholder="选择发布时间"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item v-if="dialogStatus=='update'" label="点赞数" prop="likes">
+        <el-input v-model="temp.likes" type="number" />
+      </el-form-item>
+      <el-form-item v-if="dialogStatus=='update'" label="评论数" prop="comments">
+        <el-input v-model="temp.comments" type="number" />
+      </el-form-item>
+      <el-form-item v-if="dialogStatus=='update'" label="状态" prop="status">
         <el-select v-model="temp.status" class="el-input" placeholder="请选择">
           <el-option
             v-for="item in statusOptions"
@@ -102,6 +117,7 @@ export default {
   components: { Tinymce, TreeSelect },
   data() {
     return {
+      radio: 1,
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dataForm: {},
       dialogFormVisible: false, // 是否显示对话框
@@ -136,7 +152,9 @@ export default {
         status: '0', // 状态
         seo_title: '', // seo标题
         seo_keywords: '', // seo关键词
-        seo_description: '' // seo描述
+        seo_description: '', // seo描述
+        likes: 0, // 点赞数
+        comments: 0 // 点赞数
       },
       // 表单规则
       rules: {
@@ -169,9 +187,14 @@ export default {
         status: '0', // 状态
         seo_title: '', // seo标题
         seo_keywords: '', // seo关键词
-        seo_description: '' // seo描述
+        seo_description: '', // seo描述
+        likes: 0, // 点赞数
+        comments: 0 // 点赞数
       }
       this.defaultCheckedKeys = []
+      if (this.$refs['editor']) {
+        window.tinymce.get(this.$refs['editor'].id).setContent('')
+      }
     },
     init(row, categoryData, labelData) {
       this.dialogFormVisible = true
