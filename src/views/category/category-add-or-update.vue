@@ -25,11 +25,34 @@
       <el-form-item label="栏目名称" prop="name">
         <el-input v-model="temp.name" />
       </el-form-item>
+      <el-form-item label="栏目简介" prop="summary">
+        <el-input v-model="temp.summary" />
+      </el-form-item>
 
       <el-form-item label="链接" prop="url">
         <el-input v-model="temp.url" />
       </el-form-item>
 
+      <el-form-item label="栏目图片">
+        <el-radio-group v-model="image_radio">
+          <el-radio :label="0">网络图片</el-radio>
+          <el-radio :label="1">上传栏目图片</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="image_radio==0" label="栏目图片" prop="image">
+        <el-input v-model="temp.image" type="url" />
+      </el-form-item>
+      <el-form-item v-if="image_radio==1" label="栏目图片" prop="image">
+        <el-upload
+          class="image-uploader"
+          :action="uploadAction"
+          :show-file-list="false"
+          :on-success="handleImageSuccess"
+        >
+          <img v-if="temp.image" :src="temp.image" class="image">
+          <i v-else class="el-icon-plus image-uploader-icon" />
+        </el-upload>
+      </el-form-item>
       <el-form-item label="是否是分类">
         <el-radio-group v-model="radio" :change="typeChange(radio)">
           <el-radio :label="1">是</el-radio>
@@ -65,7 +88,8 @@ export default {
         children: 'children',
         label: 'name'
       },
-      radio: 1,
+      radio: 1, // 是否是分类的按钮
+      image_radio: 1, // 图片类型的按钮
       // 临时数据
       temp: {
         id: '',
@@ -73,11 +97,16 @@ export default {
         url: '', // 链接
         is_category: 1, // 是否是分类
         parent_id: '0',
+        image: '', // 栏目图片
+        summary: '', // 栏目简介
         sort: '1'// 排序
       },
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/material/upload', // 上传图片的链接
       // 表单规则
       rules: {
         name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+        image: [{ required: true, message: '请选择栏目图片', trigger: 'blur' }],
+        summary: [{ required: true, message: '请输入栏目简介', trigger: 'blur' }],
         url: [{ required: true, message: '请输入链接', trigger: 'blur' }],
         sort: [{ required: true, message: '请输入排序', trigger: 'blur' }]
       }
@@ -94,6 +123,8 @@ export default {
         name: '',
         url: '',
         parent_id: '0',
+        image: '', // 栏目图片
+        summary: '', // 栏目简介
         is_category: 1, // 是否是分类
         sort: '1'// 排序
       }
@@ -115,6 +146,9 @@ export default {
       if (checkedIds !== '') {
         this.temp.parent_id = checkedIds
       }
+    },
+    handleImageSuccess(res, file) {
+      this.temp.image = res.file
     },
     // 监听单选框
     typeChange(radio) {
@@ -165,3 +199,30 @@ export default {
   }
 }
 </script>
+
+<style>
+  .image-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .image-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .image-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 420px;
+    height: 280px;
+    line-height: 280px;
+    text-align: center;
+  }
+  .image {
+    width: 420px;
+    height: 280px;
+    display: block;
+  }
+</style>
+

@@ -50,6 +50,12 @@
           <span>{{ props.row.title }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="精彩专题" min-width="150px">
+        <template slot-scope="props">
+          <el-tag v-if="props.row.is_special =='1'" type="success">是</el-tag>
+          <el-tag v-if="props.row.is_special =='0'" type="danger">否</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" min-width="150px">
         <template slot-scope="props">
           <span>{{ props.row.created_at }}</span>

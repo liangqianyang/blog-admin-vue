@@ -51,9 +51,19 @@
           <span>{{ props.row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="栏目图片" min-width="150px">
+        <template slot-scope="props">
+          <img :src="props.row.image" width="140" height="100">
+        </template>
+      </el-table-column>
       <el-table-column label="栏目名称" min-width="150px">
         <template slot-scope="props">
           <span>{{ props.row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="栏目简介" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.summary }}</span>
         </template>
       </el-table-column>
       <el-table-column label="链接" min-width="150px">

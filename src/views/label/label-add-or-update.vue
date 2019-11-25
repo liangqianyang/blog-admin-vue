@@ -16,6 +16,14 @@
       <el-form-item label="标签名称" prop="title">
         <el-input v-model="temp.title" />
       </el-form-item>
+
+      <el-form-item label="是否是精彩专题">
+        <el-radio-group v-model="radio" :change="typeChange(radio)">
+          <el-radio :label="1">是</el-radio>
+          <el-radio :label="0">否</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取消</el-button>
@@ -30,13 +38,15 @@ export default {
   components: { },
   data() {
     return {
+      radio: 0,
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dataForm: {},
       dialogFormVisible: false, // 是否显示对话框
       // 临时数据
       temp: {
         id: '',
-        title: '' // 标签名称
+        title: '', // 标签名称
+        is_special: '' // 是否是精彩专题
       },
       // 表单规则
       rules: {
@@ -52,7 +62,8 @@ export default {
     resetTemp() {
       this.temp = {
         id: '',
-        title: ''
+        title: '',
+        is_special: '' // 是否是精彩专题
       }
     },
     init(row) {
@@ -63,6 +74,10 @@ export default {
       } else {
         this.dialogStatus = 'create'
       }
+    },
+    // 监听单选框
+    typeChange(radio) {
+      this.temp.is_special = radio
     },
     // 创建数据
     createData() {
