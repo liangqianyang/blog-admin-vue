@@ -106,7 +106,7 @@
       </el-table-column>
       <el-table-column label="文章分类" min-width="100px">
         <template slot-scope="props">
-          <el-tag v-for="(item,index) in props.row.categories" :key="index" style="margin-right:5px;">{{ item.name }}</el-tag>
+          <el-tag>{{ props.row.categories.name }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="文章标签" min-width="150px">

@@ -162,8 +162,7 @@ export default {
         summary: [{ required: true, message: '请输入文章简介', trigger: 'blur' }],
         cid: [{ required: true, message: '请选择文章分类', trigger: 'blur' }],
         label_ids: [{ required: true, message: '请选择文章标签', trigger: 'blur' }],
-        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
-        cover: [{ required: true, message: '请上传文章封面图片', trigger: 'blur' }]
+        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
       },
       uploadAction: process.env.VUE_APP_BASE_API + '/api/article/upload' // 上传图片的链接
     }
