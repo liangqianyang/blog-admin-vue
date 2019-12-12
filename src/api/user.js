@@ -78,6 +78,19 @@ export function update(data) {
 }
 
 /**
+ * 更新用户的个人中心
+ * @param {*} data 数据
+ */
+export function updateCenter(data) {
+  return request({
+    url: '/api/user/center',
+    method: 'put',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    data: qs.stringify(data)
+  })
+}
+
+/**
  * 删除用户
  * @param {*} ids 要删除的行
  */

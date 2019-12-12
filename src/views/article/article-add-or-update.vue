@@ -164,7 +164,7 @@ export default {
         label_ids: [{ required: true, message: '请选择文章标签', trigger: 'blur' }],
         content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
       },
-      uploadAction: process.env.VUE_APP_BASE_API + '/api/article/upload' // 上传图片的链接
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/material/upload' // 上传图片的链接
     }
   },
   created() {

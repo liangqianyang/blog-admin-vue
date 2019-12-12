@@ -17,7 +17,7 @@
                 <timeline />
               </el-tab-pane> -->
               <el-tab-pane label="Account" name="account">
-                <account :user="user" />
+                <account :user="info" />
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -31,7 +31,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import UserCard from './components/UserCard'
-
+import { getInfo } from '@/api/user'
 import Account from './components/Account'
 
 export default {
@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       user: {},
+      info: {},
       activeTab: 'account'
     }
   },
@@ -55,11 +56,12 @@ export default {
   },
   methods: {
     getUser() {
+      getInfo().then(response => {
+        this.info = response.data
+      })
       this.user = {
         username: this.name,
         role: this.roles,
-        phone: '18155371631',
-        email: '543492227@qq.com',
         avatar: this.avatar
       }
     }

@@ -12,51 +12,81 @@
       label-width="120px"
       style="width: 60%; margin-left:50px;"
     >
-      <el-form-item label="用户名称" prop="username">
-        <el-input v-model="temp.username" placeholder="请输入用户名" />
-      </el-form-item>
-      <el-form-item label="真实姓名" prop="real_name">
-        <el-input v-model="temp.real_name" placeholder="请输入真实姓名" />
-      </el-form-item>
-      <el-form-item v-if="dialogStatus == 'create'" label="密码" prop="password">
-        <el-input v-model="temp.password" type="password" placeholder="请输入密码" />
-      </el-form-item>
-      <el-form-item v-if="dialogStatus == 'create'" label="确认密码" prop="check_password">
-        <el-input v-model="temp.check_password" placeholder="请确认密码" type="password" />
-      </el-form-item>
-      <el-form-item label="头像" prop="avatar">
-        <el-upload
-          class="avatar-uploader"
-          :action="uploadAction"
-          :show-file-list="false"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload"
-        >
-          <img v-if="imageUrl" :src="imageUrl" class="avatar">
-          <i v-else class="el-icon-plus avatar-uploader-icon" />
-        </el-upload>
-      </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input v-model="temp.email" placeholder="请输入用户邮箱" />
-      </el-form-item>
-      <el-form-item label="手机号码" prop="phone">
-        <el-input v-model="temp.phone" placeholder="请输入用户手机号码" />
-      </el-form-item>
-      <el-form-item label="角色" prop="role_ids">
-        <el-checkbox-group v-model="temp.role_ids">
-          <el-checkbox v-for="role in rolesData" :key="role.id" :label="role.id">{{ role.name }}</el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="状态">
-        <el-select v-model="temp.status" class="el-input" placeholder="请选择">
-          <el-option
-            v-for="item in statusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="基本信息" name="first">
+          <el-form-item label="用户名称" prop="username">
+            <el-input v-model="temp.username" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="真实姓名" prop="real_name">
+            <el-input v-model="temp.real_name" placeholder="请输入真实姓名" />
+          </el-form-item>
+          <el-form-item v-if="dialogStatus == 'create'" label="密码" prop="password">
+            <el-input v-model="temp.password" type="password" placeholder="请输入密码" />
+          </el-form-item>
+          <el-form-item v-if="dialogStatus == 'create'" label="确认密码" prop="check_password">
+            <el-input v-model="temp.check_password" placeholder="请确认密码" type="password" />
+          </el-form-item>
+          <el-form-item label="头像" prop="avatar">
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadAction"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="temp.email" placeholder="请输入用户邮箱" />
+          </el-form-item>
+          <el-form-item label="手机号码" prop="phone">
+            <el-input v-model="temp.phone" placeholder="请输入用户手机号码" />
+          </el-form-item>
+          <el-form-item label="角色" prop="role_ids">
+            <el-checkbox-group v-model="temp.role_ids">
+              <el-checkbox v-for="role in rolesData" :key="role.id" :label="role.id">{{ role.name }}</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="temp.status" class="el-input" placeholder="请选择">
+              <el-option
+                v-for="item in statusOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-tab-pane>
+        <el-tab-pane label="个人中心" name="second">
+          <el-form-item label="英文名">
+            <el-input v-model="temp.en_name" placeholder="请输入英文名" />
+          </el-form-item>
+          <el-form-item label="中文名">
+            <el-input v-model="temp.cn_name" placeholder="请输入中文名" />
+          </el-form-item>
+          <el-form-item label="昵称">
+            <el-input v-model="temp.nickname" placeholder="请输入昵称" />
+          </el-form-item>
+          <el-form-item label="职业">
+            <el-input v-model="temp.profession" placeholder="请输入职业" />
+          </el-form-item>
+          <el-form-item label="技能">
+            <el-input v-model="temp.skills" placeholder="请输入技能,格式为json 例子:{'php':100,'java':50}" />
+          </el-form-item>
+          <el-form-item label="住址">
+            <el-input v-model="temp.address" placeholder="请输入住址" />
+          </el-form-item>
+          <el-form-item label="简介">
+            <el-input v-model="temp.summary" type="textarea" :rows="4" placeholder="请输入用户简介" />
+          </el-form-item>
+          <el-form-item label="独白">
+            <el-input v-model="temp.description" type="textarea" :rows="4" placeholder="请输入独白" />
+          </el-form-item>
+        </el-tab-pane>
+      </el-tabs>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取消</el-button>
@@ -71,6 +101,7 @@ export default {
   components: { },
   data() {
     return {
+      activeName: 'first',
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dialogFormVisible: false, // 是否显示对话框
       imageUrl: '', // 用户头像链接
@@ -92,7 +123,15 @@ export default {
         phone: '', // 电话
         avatar: '',
         role_ids: [], // 选中角色
-        status: '0'
+        status: '0',
+        cn_name: '', // 中文名
+        en_name: '', // 英文名
+        nick_name: '', // 昵称
+        skills: '', // 技能
+        address: '', // 住址
+        profession: '', // 职业
+        summary: '', // 简介
+        description: '' // 独白
       },
       // 表单规则
       rules: {
@@ -121,7 +160,15 @@ export default {
         check_password: '', // 确认密码
         avatar: '', // 头像
         role_ids: [], // 角色
-        status: '0'
+        status: '0',
+        cn_name: '', // 中文名
+        en_name: '', // 英文名
+        nick_name: '', // 昵称
+        skills: '', // 技能
+        address: '', // 住址
+        profession: '', // 职业
+        summary: '', // 简介
+        description: '' // 独白
       }
     },
     init(row, rolesDataList) {

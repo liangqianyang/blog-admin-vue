@@ -13,7 +13,7 @@
       </div>
       <div class="box-center">
         <div class="user-name text-center">{{ user.name }}</div>
-        <div class="user-role text-center text-muted">{{ user.role | uppercaseFirst }}</div>
+        <div class="user-role text-center text-muted">{{ user.role }}</div>
       </div>
     </div>
 
@@ -30,33 +30,9 @@
       <div class="user-skills user-bio-section">
         <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>Skills</span></div>
         <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>PHP</span>
-            <el-progress :percentage="90" />
-          </div>
-          <div class="progress-item">
-            <span>JAVA</span>
-            <el-progress :percentage="75" />
-          </div>
-          <div class="progress-item">
-            <span>GO</span>
-            <el-progress :percentage="65" />
-          </div>
-          <div class="progress-item">
-            <span>HTML</span>
-            <el-progress :percentage="80" />
-          </div>
-          <div class="progress-item">
-            <span>JavaScript</span>
-            <el-progress :percentage="80" />
-          </div>
-          <div class="progress-item">
-            <span>CSS</span>
-            <el-progress :percentage="75" />
-          </div>
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="70" />
+          <div v-for="(item,index) in info.skills" :key="index" class="progress-item">
+            <span>{{ item.id }}</span>
+            <el-progress :percentage="item.value" />
           </div>
         </div>
       </div>
@@ -66,6 +42,7 @@
 
 <script>
 import PanThumb from '@/components/PanThumb'
+import { getInfo } from '@/api/user'
 
 export default {
   components: { PanThumb },
@@ -77,9 +54,25 @@ export default {
           name: '',
           email: '',
           avatar: '',
-          roles: ''
+          roles: '',
+          skills: {}
         }
       }
+    }
+  },
+  data() {
+    return {
+      info: {}
+    }
+  },
+  created() {
+    this.getUser()
+  },
+  methods: {
+    getUser() {
+      getInfo().then(response => {
+        this.info = response.data
+      })
     }
   }
 }

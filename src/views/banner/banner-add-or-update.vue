@@ -51,7 +51,7 @@ export default {
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dataForm: {},
       dialogFormVisible: false, // 是否显示对话框
-      uploadAction: process.env.VUE_APP_BASE_API + '/api/banner/upload', // 上传图片的链接
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/material/upload', // 上传图片的链接
       imageUrl: '', // 轮播展示图
       // 临时数据
       temp: {

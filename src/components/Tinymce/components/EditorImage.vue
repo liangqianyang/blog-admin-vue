@@ -45,7 +45,7 @@ export default {
       dialogVisible: false,
       listObj: {},
       fileList: [],
-      uploadAction: process.env.VUE_APP_BASE_API + '/api/article/upload' // 上传图片的链接
+      uploadAction: process.env.VUE_APP_BASE_API + '/api/material/upload' // 上传图片的链接
     }
   },
   methods: {

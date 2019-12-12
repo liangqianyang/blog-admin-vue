@@ -3,20 +3,12 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.username"
-        placeholder="请输入用户名称"
+        placeholder="请输入用户名"
         style="width: 200px;"
         class="filter-item"
         clearable
         @keyup.enter.native="handleFilter"
       />
-      <!-- <el-select v-model="listQuery.status" class="filter-item" placeholder="请选择状态">
-        <el-option
-          v-for="item in statusOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select> -->
       <el-button
         v-waves
         class="filter-item"
@@ -24,13 +16,6 @@
         icon="el-icon-search"
         @click="handleFilter"
       >搜索</el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate({})"
-      >新增</el-button>
       <el-button
         v-waves
         :loading="delLoading"
@@ -51,48 +36,37 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column label="头像" prop="avatar" align="center">
-        <template slot-scope="scope">
-          <img :src="scope.row.avatar" width="100" height="100">
+      <el-table-column label="用户头像" min-width="150px">
+        <template slot-scope="props">
+          <img :src="props.row.avatar" width="50">
         </template>
       </el-table-column>
-      <el-table-column label="用户名称" min-width="150px">
+      <el-table-column label="用户名" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="留言内容" min-width="250px">
+        <template slot-scope="props">
+          <el-tag>{{ props.row.content }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否回复" min-width="100px">
+        <template slot-scope="props">
+          <el-tag v-if="props.row.replies.length >0" type="success">是</el-tag>
+          <el-tag v-if="props.row.replies.length ==0" type="danger">否</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建日期" min-width="150px">
+        <template slot-scope="props">
+          <span>{{ props.row.created_at }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" min-width="150px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.username }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="真实姓名" min-width="150px">
-        <template slot-scope="{row}">
-          <span>{{ row.real_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="英文名" min-width="150px">
-        <template slot-scope="{row}">
-          <span>{{ row.en_name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="职业" min-width="150px">
-        <template slot-scope="{row}">
-          <span>{{ row.profession }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="角色" min-width="150px">
-        <template slot-scope="scope">
-          <el-tag v-for="role in scope.row.role_names" :key="role" style="margin-right:5px;">{{ role }}</el-tag>
-        </template>
-      </el-table-column>
-      <!-- <el-table-column label="状态" prop="status" sortable="custom" align="center">
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.status =='0'" type="success">正常</el-tag>
-          <el-tag v-if="scope.row.status =='9'" type="danger">停用</el-tag>
-        </template>
-      </el-table-column> -->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">回复</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -114,22 +88,20 @@
         <el-button type="primary" @click="deleteRow">确 定</el-button>
       </span>
     </el-dialog>
-
-    <!-- 新增/编辑提示框 -->
+    <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getList" />
   </div>
 </template>
 
 <script>
-import { list, destroy } from '@/api/user'
-import { roles } from '@/api/role'
+import AddOrUpdate from './message-add-or-update'
+import { list, destroy } from '@/api/message'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import AddOrUpdate from './user-add-or-update'
 
 export default {
-  name: 'User',
-  components: { Pagination, AddOrUpdate },
+  name: 'Article',
+  components: { AddOrUpdate, Pagination },
   directives: { waves },
   data() {
     return {
@@ -139,59 +111,23 @@ export default {
       listLoading: true, // loading
       // 查询条件
       listQuery: {
-        page: 1,
-        limit: 20,
-        username: '',
-        sort: '',
-        status: '0'
+        username: ''
       },
       delVisible: false, // 删除提示弹框的状态
-      addOrUpdateVisible: false, // 新增编辑弹窗
-      statusOptions: [{
-        value: '',
-        label: '全部'
-      }, {
-        value: '0',
-        label: '正常'
-      }, {
-        value: '9',
-        label: '停用'
-      }],
-      ids: [], // 选中的id
-      delLoading: false// 删除loading
+      id: '', // 选中的id
+      ids: [], // 选中的ids
+      delLoading: false, // 删除loading
+      addOrUpdateVisible: false,
+      host: process.env.VUE_APP_BASE_API
     }
   },
   created() {
     this.getList()// 获取列表数据
-    this.getRoles()// 获取下拉框中可用的角色列表
   },
   methods: {
     // 搜索
     handleFilter() {
-      this.listQuery.page = 1
       this.getList()
-    },
-    // 排序
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'status') {
-        this.sortByStatus(order)
-      }
-    },
-    // 根据状态排序
-    sortByStatus(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = 'status asc'
-      } else {
-        this.listQuery.sort = 'status desc'
-      }
-      this.handleFilter()
-    },
-    // 获取角色列表
-    getRoles() {
-      roles().then(response => {
-        this.rolesData = response.data
-      })
     },
     // 获取数据列表
     getList() {
@@ -202,20 +138,11 @@ export default {
         this.listLoading = false
       })
     },
-    // 响应创建操作
-    handleCreate(row) {
-      this.addOrUpdateVisible = true
-      this.$nextTick(() => {
-        this.$refs.addOrUpdate.resetTemp()
-        this.$refs.addOrUpdate.init(row, this.rolesData)
-      })
-    },
     // 响应更新操作
     handleUpdate(row) {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs.addOrUpdate.resetTemp()
-        this.$refs.addOrUpdate.init(row, this.rolesData)
+        this.$refs.addOrUpdate.init(row, this.categotyData, this.labelData)
       })
     },
     // 响应删除操作
