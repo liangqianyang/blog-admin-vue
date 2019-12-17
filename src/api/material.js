@@ -13,6 +13,13 @@ export function list(query) {
   })
 }
 
+export function getAll() {
+  return request({
+    url: '/api/material/enable',
+    method: 'get'
+  })
+}
+
 /**
  * 新增素材
  * @param {*} data 数据

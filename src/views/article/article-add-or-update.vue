@@ -58,13 +58,47 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item v-if="radio==0" label="封面图片" prop="cover">
-        <el-input v-model="temp.cover" type="url" />
+        <el-input v-model="temp.cover" type="url" style="margin-bottom: 5px;" />
+        <el-table
+          :key="tableKey"
+          ref="multipleTable"
+          v-loading="listLoading"
+          :data="list"
+          row-key="id"
+          border
+          fit
+          highlight-current-row
+          style="width: 100%;"
+          @row-click="handleRowClick"
+        >
+          <el-table-column label="标题" min-width="150px">
+            <template slot-scope="props">
+              <span>{{ props.row.title }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="素材图片" prop="image_url" align="center" min-width="320px">
+            <template slot-scope="scope">
+              <img :src="scope.row.url" width="300">
+            </template>
+          </el-table-column>
+          <el-table-column label="类型" min-width="150px">
+            <template slot-scope="props">
+              <span>{{ props.row.type }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="宽度" min-width="80px">
+            <template slot-scope="props">
+              <span>{{ props.row.width }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <pagination v-show="total>0" :page-sizes="pageSizes" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
       </el-form-item>
       <el-form-item v-if="radio==1" label="封面图片" prop="cover">
         <el-upload
           class="cover-uploader"
           :action="uploadAction"
-          name="cover"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
@@ -111,12 +145,25 @@
 
 <script>
 import { create, update } from '@/api/article'
+import { list } from '@/api/material'
 import Tinymce from '@/components/Tinymce'
 import TreeSelect from '@/components/TreeSelect/tree-select.vue'
+import waves from '@/directive/waves' // waves directive
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 export default {
-  components: { Tinymce, TreeSelect },
+  components: { Tinymce, TreeSelect, Pagination },
+  directives: { waves },
   data() {
     return {
+      tableKey: 0,
+      list: null, // 列表数据
+      listLoading: true, // loading
+      total: 0,
+      // 查询条件
+      listQuery: {
+        title: ''
+      },
+      pageSizes: [5, 10, 15, 20],
       radio: 1,
       dialogStatus: '', // Dialog对话框状态 新增|编辑
       dataForm: {},
@@ -200,6 +247,7 @@ export default {
       this.resetTemp()// 重置表单
       this.categoryOptions = categoryData// 为文章分类数据赋值
       this.labelOptions = labelData// 为文章标签数据赋值
+      this.getList() // 素材列表
       if (Object.keys(row).length !== 0) {
         this.dialogStatus = 'update'
         this.temp = Object.assign({}, row) // copy obj
@@ -238,7 +286,19 @@ export default {
       }
       return isJPG && isLt2M
     },
-
+    // 获取数据列表
+    getList() {
+      this.listLoading = true
+      list(this.listQuery).then(response => {
+        this.list = response.data
+        this.total = response.total
+        this.listLoading = false
+      })
+    },
+    // 当素材被选中时
+    handleRowClick(row, column, event) {
+      this.temp.cover = row.url
+    },
     // 创建数据
     createData() {
       this.$refs['dataForm'].validate(valid => {

@@ -123,6 +123,8 @@ export default {
         toolbar: this.toolbar.length > 0 ? this.toolbar : toolbar,
         menubar: this.menubar,
         plugins: plugins,
+        font_formats: 'Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;微软雅黑=Microsoft YaHei,Helvetica Neue,PingFang SC,sans-serif;苹果苹方=PingFang SC,Microsoft YaHei,sans-serif;宋体=simsun,serif',
+        fontsize_formats: '8pt 10pt 12pt 14pt 18pt 24pt 36pt',
         end_container_on_empty_block: true,
         powerpaste_word_import: 'clean',
         code_dialog_height: 450,
