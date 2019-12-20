@@ -111,7 +111,7 @@
       </el-table-column>
       <el-table-column label="文章标签" min-width="150px">
         <template slot-scope="props">
-          <el-tag v-for="(item,index) in props.row.labels" :key="index" type="success" style="margin-right:5px;">{{ item.title }}</el-tag>
+          <el-tag v-for="(item,index) in props.row.labels" :key="index" type="success" style="margin-right:5px;margin-bottom:5px;">{{ item.title }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="发布日期" min-width="150px">
