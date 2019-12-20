@@ -71,7 +71,7 @@ export default {
       if (Object.keys(row).length !== 0) {
         this.dialogStatus = 'update'
         this.temp = Object.assign({}, row) // copy obj
-        this.radio = this.temp.is_special
+        this.radio = parseInt(this.temp.is_special)
       } else {
         this.dialogStatus = 'create'
       }

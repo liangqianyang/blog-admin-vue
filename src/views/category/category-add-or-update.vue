@@ -136,7 +136,7 @@ export default {
       if (Object.keys(row).length !== 0) {
         this.dialogStatus = 'update'
         this.temp = Object.assign({}, row) // copy obj
-        this.radio = this.temp.is_category
+        this.radio = parseInt(this.temp.is_category)
         this.defaultCheckedKeys = [row.parent_id]
       } else {
         this.dialogStatus = 'create'
