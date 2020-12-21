@@ -18,21 +18,24 @@ function hasPermission(roles, route) {
 /**
  * 后台查询的菜单数据拼装成路由格式的数据
  * @param routes
+ * @param data
  */
 export function generaMenu(routes, data) {
-  data.forEach(item => {
-    const menu = {
-      path: item.url === '#' ? item.id + '_key' : item.url,
-      component: item.url === '#' ? Layout : () => import(`@/views${item.url}`),
-      children: [],
-      name: 'menu_' + item.id,
-      meta: { title: item.name, id: item.id, icon: item.icon }
-    }
-    if (item.children) {
-      generaMenu(menu.children, item.children)
-    }
-    routes.push(menu)
-  })
+  if (data.length > 0) {
+    data.forEach(item => {
+      const menu = {
+        path: item.url === '#' ? item.id + '_key' : item.url,
+        component: item.url === '#' ? Layout : (resolve) => require([`@/views${item.url}`], resolve),
+        children: [],
+        name: 'menu_' + item.id,
+        meta: { title: item.name, id: item.id, icon: item.icon }
+      }
+      if (item.children) {
+        generaMenu(menu.children, item.children)
+      }
+      routes.push(menu)
+    })
+  }
 }
 
 /**
